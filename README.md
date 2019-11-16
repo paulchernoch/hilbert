@@ -27,7 +27,7 @@ Researchers have discovered many uses for the Hilbert Curve, including:
 
 This library offers the following features:
 
-  - _Forward Hilbert Curve transformation_ from a D-dimensional point to a 1-dimensional index (represented as a `BigUint`). See the `fast_hilbert` module.
+  - _Forward Hilbert Curve transformation_ from a D-dimensional point to a 1-dimensional index (represented as a `BigUint`). See the `fast_hilbert` module. Points may have anywhere from two to thousands of dimensions.
   - _Inverse Hilbert Curve transformation_ from a 1-dimensional `BigUint` index back to a D-dimensional point. See the `fast_hilbert` module.
   - _D-dimensional points_ whose Euclidean distance formula has been optimized, making it suitable for use in **K-nearest neighbor** searches. See the `Point` class. The `hilbert_sort` method sorts points according to the Hilbert Curve.
   - _Data normalization_ routines to prepare input data so that a Hilbert transform may be applied to it. See the classes `IntegerDataRange` and `FloatDataRange`. The `normalize` and `compress` methods can translate and scale the input data and coerce it into the unsigned values that the Hilbert transform requires.
@@ -57,7 +57,7 @@ Here are examples using the crate:
 ```
         // 1. Create two 3-D points and get the square of the distance between them.
         let p1 = Point::new(0, &[3, 4, 5]);
-        let p2 = Point::new(0, &[0, 8, 10]);
+        let p2 = Point::new(1, &[0, 8, 10]);
         let sqr_dist = p1.square_distance(&p2);
         assert(sqr_dist == 50, "Square distance should be 50");
 
