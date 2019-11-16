@@ -13,6 +13,15 @@ pub mod interleaver;
 pub mod normalize;
 pub mod permutation;
 
+// Public API.
+pub use self::normalize::IntegerDataRange;
+pub use self::normalize::FloatDataRange;
+pub use self::permutation::Permutation;
+pub use self::point::Point;
+pub use self::point_list::make_points_f64;
+pub use self::point_list::make_points_i32;
+pub use self::transform::fast_hilbert;
+
 
 #[cfg(test)]
 mod tests {

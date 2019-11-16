@@ -1,8 +1,13 @@
 [package]
 name = "hilbert"
+license = "MIT"
 version = "0.1.0"
 authors = ["paulchernoch <paul.chernoch@yahoo.com>"]
 edition = "2018"
+description = "Hilbert curve transform and inverse for points having two to thousands of dimensions, using Skilling's algorithm."
+readme = "README.md"
+keywords = ["Hilbert", "fractal", "curve", "Skilling"]
+categories = ["algorithms"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
