@@ -59,7 +59,7 @@ Here are examples using the crate:
         let p1 = Point::new(0, &[3, 4, 5]);
         let p2 = Point::new(1, &[0, 8, 10]);
         let sqr_dist = p1.square_distance(&p2);
-        assert(sqr_dist == 50, "Square distance should be 50");
+        assert!(sqr_dist == 50, "Square distance should be 50");
 
         // 2. Perform the Hilbert Transform on a single point,
         //    using 5 bits per dimension (which assumes no coordinate exceeds 31).
@@ -74,13 +74,13 @@ Here are examples using the crate:
            vec![-4.802, 20.2, 100.19],
            vec![42.0, -100.0, 0.0]
         ];
-        let mut points = point_list::make_points_f64(point_data, 0, None, None, 10.0);
+        let (mut points, bits) = point_list::make_points_f64(&point_data, 0, None, None, 10.0);
 
         // 4. Sort the points by the Hilbert Curve, using 11 bits per dimension,
         //    because the range of data is 200.19, multiplied by the scale of 10 
         //  yields 2001.9, ceiling of that yields 2002, which is between 1024 (2^10) 
         //  and 2048 (2^11), so 11 bits are required to store the 
         //  highest coordinate value.
-        hilbert_sort(&mut points, 11);
+        Point::hilbert_sort(&mut points, 11);
 ```
 
