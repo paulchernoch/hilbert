@@ -104,56 +104,14 @@ impl Point {
     ///    - 2·A·B is twice the dot product of A and B. 
     /// This saves about N subtractions.  
     pub fn square_distance(&self, other_point : &Point) -> u64 {
-        let mut dot_product = 0_u64;
-        // Manual loop unrolling speeds things up. 
-        let full_loops = self.dimensions() / 8;
-        for batch in 0..full_loops {
-            let offset = batch * 8;
-            dot_product += self.coordinates[offset] as u64 * other_point.coordinates[offset] as u64;
-            dot_product += self.coordinates[offset + 1] as u64 * other_point.coordinates[offset + 1] as u64;
-            dot_product += self.coordinates[offset + 2] as u64 * other_point.coordinates[offset + 2] as u64;
-            dot_product += self.coordinates[offset + 3] as u64 * other_point.coordinates[offset + 3] as u64;
-            dot_product += self.coordinates[offset + 4] as u64 * other_point.coordinates[offset + 4] as u64;
-            dot_product += self.coordinates[offset + 5] as u64 * other_point.coordinates[offset + 5] as u64;
-            dot_product += self.coordinates[offset + 6] as u64 * other_point.coordinates[offset + 6] as u64;
-            dot_product += self.coordinates[offset + 7] as u64 * other_point.coordinates[offset + 7] as u64;
-        }
-        for dim in (full_loops * 8)..self.dimensions() {
-            dot_product += self.coordinates[dim] as u64 * other_point.coordinates[dim] as u64;
-        }
-        self.square_magnitude + other_point.square_magnitude - 2 * dot_product
-    }
-
-    /// For the purpose of demonstrating benchmark improvement compared to square_distance_no_loop_unrolling.
-    pub fn square_distance_loop_unrolling(&self, other_point : &Point) -> u64 {
-        let mut dot_product = 0_u64;
-        // Manual loop unrolling speeds things up. 
-        let full_loops = self.dimensions() / 8;
-        for batch in 0..full_loops {
-            let offset = batch * 8;
-            dot_product += self.coordinates[offset] as u64 * other_point.coordinates[offset] as u64;
-            dot_product += self.coordinates[offset + 1] as u64 * other_point.coordinates[offset + 1] as u64;
-            dot_product += self.coordinates[offset + 2] as u64 * other_point.coordinates[offset + 2] as u64;
-            dot_product += self.coordinates[offset + 3] as u64 * other_point.coordinates[offset + 3] as u64;
-            dot_product += self.coordinates[offset + 4] as u64 * other_point.coordinates[offset + 4] as u64;
-            dot_product += self.coordinates[offset + 5] as u64 * other_point.coordinates[offset + 5] as u64;
-            dot_product += self.coordinates[offset + 6] as u64 * other_point.coordinates[offset + 6] as u64;
-            dot_product += self.coordinates[offset + 7] as u64 * other_point.coordinates[offset + 7] as u64;
-        }
-        for dim in (full_loops * 8)..self.dimensions() {
-            dot_product += self.coordinates[dim] as u64 * other_point.coordinates[dim] as u64;
-        }
-        self.square_magnitude + other_point.square_magnitude - 2 * dot_product
-    }
-
-    /// For the purpose of demonstrating benchmark regression compared to square_distance_loop_unrolling.
-    pub fn square_distance_no_loop_unrolling(&self, other_point : &Point) -> u64 {
-        let mut dot_product = 0_u64;
-        // TODO: Original C# version also performed manual loop unrolling here. 
-        for dim in 0..self.dimensions() {
-            dot_product += self.coordinates[dim] as u64 * other_point.coordinates[dim] as u64;
-        }
-        self.square_magnitude + other_point.square_magnitude - 2 * dot_product
+        if self.dimensions() != other_point.dimensions() {panic!()}
+        let dotprod = self
+            .coordinates
+            .iter()
+            .zip(other_point.coordinates.iter())
+            .map(|(&a, &b)| (a as u64)*(b as u64))
+            .sum();
+        self.square_magnitude + other_point.square_magnitude - 2*dotprod
     }
 
     /// Compares the coordinates of the two `Points` to see if they match in value and sequence. 
