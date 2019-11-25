@@ -18,6 +18,47 @@ Researchers have discovered many uses for the Hilbert Curve, including:
 
 ![Hilbert Curve diagram](./Hilbert-Curve.png "Generation of the Hilbert Curve in 2 and 3 Dimensions")
 
+```
+ The 1st Three Iterations of the HILBERT CURVE
+
+     ╔════════════╗      ╔═════╗    ╔═════╗
+     ║            ║      ║     ║    ║     ║
+     ║            ║      ║     ╚════╝     ║
+     ║            ║      ║                ║
+     ║            ║      ╚═════╗    ╔═════╝
+     ║            ║            ║    ║
+     ║            ║            ║    ║
+                         ══════╝    ╚══════
+       
+     1 iteration             2 iterations
+       
+
+       ╔════╗    ╔════╗    ╔════╗    ╔════╗
+       ║    ║    ║    ║    ║    ║    ║    ║
+       ║    ║    ║    ║    ║    ║    ║    ║
+       ║    ╚════╝    ║    ║    ╚════╝    ║
+       ║              ║    ║              ║
+       ║              ║    ║              ║
+       ╚════╗    ╔════╝    ╚════╗    ╔════╝
+            ║    ║              ║    ║
+            ║    ║              ║    ║
+       ╔════╝    ╚══════════════╝    ╚════╗
+       ║                                  ║
+       ║                                  ║
+       ║    ╔═════════╗    ╔═════════╗    ║
+       ║    ║         ║    ║         ║    ║
+       ║    ║         ║    ║         ║    ║
+       ╚════╝    ╔════╝    ╚════╗    ╚════╝
+                 ║              ║
+                 ║              ║
+       ╔════╗    ╚════╗    ╔════╝    ╔════╗
+       ║    ║         ║    ║         ║    ║
+       ║    ║         ║    ║         ║    ║
+       ║    ╚═════════╝    ╚═════════╝    ║
+
+                  3 iterations
+```
+
 
 ## Performance
 
