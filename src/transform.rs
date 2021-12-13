@@ -478,7 +478,7 @@ mod tests {
                             Some((coordinates, Some(changed_dim)))
                         },
                         Err(msg) => {
-                            panic!(format!("Error: {} for Hilbert index = {}", msg, i));
+                            panic!("Error: {} for Hilbert index = {}", msg, i);
                         }
                     }
                 },

@@ -94,6 +94,7 @@ Here are examples using the crate:
   2. Perform the Hilbert Transform on a single point.
   3. Create several points and normalize them.
   4. Sort the points by the Hilbert Curve, using 11 bits per dimension.
+  5. Round trip, showing how to convert a point to the Hilbert index and back again.
 
 ```
         // 1. Create two 3-D points and get the square of the distance between them.
@@ -123,5 +124,10 @@ Here are examples using the crate:
         //  and 2048 (2^11), so 11 bits are required to store the 
         //  highest coordinate value.
         Point::hilbert_sort(&mut points, 11);
+
+        // 5. Round trip, from point to Hilbert index and back.
+        let p1 = Point::new(0, &[3, 4, 5]);
+        let index = p1.hilbert_transform(5);
+        let p2 = Point::new_from_hilbert_index(0, &index, 5, 3);
 ```
 

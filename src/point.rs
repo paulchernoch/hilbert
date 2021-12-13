@@ -177,6 +177,28 @@ impl Point {
         fast_hilbert::hilbert_index(&self.coordinates, bits_per_dimension, None)
     }
 
+    /// Create a point from its Hilbert index via the inverse Hilbert transform. 
+    fn inverse_hilbert_transform(id: usize, hilbert_index: &BigUint, bits_per_dimension : usize, dimensions : usize) -> Self {
+        let coordinates = fast_hilbert::hilbert_axes(hilbert_index, bits_per_dimension, dimensions);
+        Self::new(id, &coordinates)
+    }
+
+    /// Create a point from its Hilbert index,
+    /// by performing the inverse Hilbert transform. 
+    /// 
+    ///   - `hilbert_index` - One-dimensional distance along the Hilbert curve to get to
+    ///      the desired N-Dimensional point. 
+    ///   - `bits_per_dimension` - Number of bits used to encode each coordinate of the Point. 
+    ///      This value must be at least one.
+    ///      The `BigUint` Hilbert Index for the `Point` will be composed of enough bytes
+    ///      to hold N * `bits_per_dimension` bits, where N is the number of points. 
+    ///      If any coordinate of the `Point` has a value c >= 2^ `bits_per_dimension`, 
+    ///      results are undefined and will be incorrect.
+    ///   - `dimensions` - number of dimensions in the point. 
+    pub fn new_from_hilbert_index(id: usize, hilbert_index: &BigUint, bits_per_dimension : usize, dimensions : usize) -> Self {
+        Self::inverse_hilbert_transform(id, hilbert_index, bits_per_dimension, dimensions)
+    }
+
     /// Sort a collection of `Points` in ascending **Hilbert Index** order. 
     /// 
     /// This method discards the Hilbert indices when done.
@@ -258,6 +280,14 @@ mod tests {
         // After sorting, the points should once again be in teh same order.
         Point::hilbert_sort(&mut actual_points, 3);
         asserting("Points sorted by Hilbert Index").that(&actual_points).is_equal_to(expected_points);
+    }
+
+    #[test]
+    fn point_to_hilbert_round_trip() {
+        let p1 = Point::new(0, &[3, 4, 5]);
+        let index = p1.hilbert_transform(5);
+        let p2 = Point::new_from_hilbert_index(0, &index, 5, 3);
+        asserting("Point to Hilbert round trip").that(&p1).is_equal_to(p2);
     }
 
     /// Construct all sixty-four possible 2-dimensional Points, each with coordinates requiring no more than 3 bits to represent

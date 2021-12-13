@@ -213,7 +213,7 @@ impl FloatDataRange {
     }
 
     /// Range from low to high value.
-    pub fn range(&self) -> f64 { (self.high - self.low) }
+    pub fn range(&self) -> f64 { self.high - self.low }
 
     /// Normalize an `f64` `coordinate` value, shifting it enough so that the minimum value found in any point
     /// is shifted to zero and the maximum value is shifted to `range`, and using the full number of bits required for the range
