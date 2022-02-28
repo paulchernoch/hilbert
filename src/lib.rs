@@ -12,6 +12,7 @@ pub mod transform;
 pub mod interleaver;
 pub mod normalize;
 pub mod permutation;
+pub mod integration;
 
 // Public API.
 pub use self::normalize::IntegerDataRange;
@@ -21,6 +22,8 @@ pub use self::point::Point;
 pub use self::point_list::make_points_f64;
 pub use self::point_list::make_points_i32;
 pub use self::transform::fast_hilbert;
+
+pub use self::integration::handle::Handle;
 
 
 #[cfg(test)]
