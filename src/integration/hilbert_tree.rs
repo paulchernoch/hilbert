@@ -145,7 +145,7 @@ pub struct HilbertTree<M> where M: HilbertModel {
     model: M,
 
     /// Dense storage of nodes with smaller Handles
-    heap: [TreeNode; 65535],
+    heap: Vec<TreeNode>,
 
     /// Sparse storage of nodes with larger handles
     map: HashMap<u32,TreeNode>,
@@ -166,15 +166,18 @@ impl<M> HilbertTree<M> where M: HilbertModel {
     /// Construct a HilbertTree
     pub fn new(model: M) -> Self {
         const INIT:TreeNode = TreeNode::Empty;
-        const HEAP_SIZE: usize = 65535;
+        const HEAP_SIZE: usize = 65536;
         let mut tree = HilbertTree {
             model: model,
-            heap: [INIT; HEAP_SIZE],
+            heap: Vec::with_capacity(HEAP_SIZE),
             map: HashMap::new(),
             terminus: TreeNode::Terminus(Box::new(
                 Segment::new_empty()
             ))
         };
+        for _i in 0..HEAP_SIZE {
+            tree.heap.push(INIT);
+        }
         tree.init_root();
         tree
     }
@@ -261,6 +264,7 @@ impl<M> HilbertTree<M> where M: HilbertModel {
     pub fn get_value(&self, handle: Handle) -> f64 {
         match self.get_value_node(handle) {
             TreeNode::RightBranch(segment) => segment.value,
+            TreeNode::RightLeaf(segment) => segment.value,
             TreeNode::RootLeaf(segment) => segment.value,
             TreeNode::RootBranch(segment) => segment.value,
             TreeNode::Terminus(segment) => segment.value,
@@ -365,7 +369,9 @@ impl<M> HilbertTree<M> where M: HilbertModel {
         match handle {
             Handle::None => TreeNode::Empty,
             Handle::Terminus => self.terminus.clone(),
-            Handle::Heap(i) => self.heap[i as usize].clone(),
+            Handle::Heap(i) => {
+                self.heap[i as usize].clone()
+            },
             Handle::Map(i) => {
                 match self.map.get(&i) {
                     None => TreeNode::Empty,
@@ -450,6 +456,7 @@ impl<M> HilbertTree<M> where M: HilbertModel {
     //           Modifying              //
     //                                  //
     //  bisect                          //
+    //  bisect_index                    //
     //  set_node                        //
     //                                  //
     // ///////////////////////////////////
@@ -519,11 +526,18 @@ impl<M> HilbertTree<M> where M: HilbertModel {
         Some((left_handle, right_handle, self.get_bisection_change(bisect_at).unwrap()))
     }
 
+    pub fn bisect_index(&mut self, normalized_index: f64) -> Option<(Handle, Handle, f64)>  {
+        let node_to_bisect = self.find_leaf(normalized_index);
+        self.bisect(node_to_bisect)
+    }
+
     fn set_node(&mut self, handle: Handle, node: TreeNode) -> bool {
         match handle {
             Handle::None => false,
             Handle::Terminus => { self.terminus = node; true },
-            Handle::Heap(i) => { self.heap[i as usize] = node; true },
+            Handle::Heap(i) => { 
+                self.heap[i as usize] = node; true 
+            },
             Handle::Map(i) => { self.map.insert(i, node); true } 
         }
     }
@@ -535,6 +549,7 @@ impl<M> HilbertTree<M> where M: HilbertModel {
     //  nz                              //
     //  eval                            //
     //  get_hilbert_index               //
+    //  draw                            //
     //                                  //
     // ///////////////////////////////////
 
@@ -580,11 +595,74 @@ impl<M> HilbertTree<M> where M: HilbertModel {
         }
     }
 
+
+    fn node_name(node: Handle) -> String {
+        let level = node.level().unwrap() as usize;
+        let numerator = node.numerator().unwrap();
+        let denominator = 1_usize << level;   
+        let name = if level == 0 {
+            format!("[0,1)")
+        }
+        else {
+            format!("[{}/{},{}/{})", numerator, denominator, numerator + 1, denominator)
+        };
+        name
+    }
+
+    /// Format the tree as a DOT string that Graphviz can render as a Binary tree diagram.
+    pub fn draw(&self, node: Handle, max_depth: usize, decimals: usize, output: &mut String) {
+        if self.is_empty(node) { return; }
+        let current_level = node.level().unwrap() as usize;
+        if current_level > max_depth { return; }
+
+        let value = self.get_value(node);
+        let name = Self::node_name(node);
+        let left_child = node.get_left_child().unwrap();
+        let right_child = node.get_right_child().unwrap();
+        let label = format!("{:.2$}\\n{}", value, name, decimals);   
+
+        if current_level == 0 {
+            // The header for the DOT.
+            output.push_str(&format!("
+digraph BST {{
+    node [fontname=\"Arial\"];
+
+    \"{}\" [shape=doublecircle,label=\"{}\"]", name, label));
+        }
+        else { 
+            if self.is_leaf(node) {
+                output.push_str(&format!("    \"{}\" [shape=octagon,label=\"{}\"];\n", name, label));
+            }
+            else {
+                output.push_str(&format!("\n    \"{}\" [label=\"{}\"];", name, label));
+            }
+        }
+        
+        if !self.is_leaf(node) {
+            // Links to child nodes.
+            output.push_str(&format!("
+    \"{}\" -> \"{}\";
+    \"{}\" -> \"{}\";
+", name, Self::node_name(left_child), name, Self::node_name(right_child)));
+
+            // Recurse to child nodes.
+            self.draw(left_child, max_depth, decimals, output);
+            self.draw(right_child, max_depth, decimals, output);
+        }
+
+        // The footer for the DOT.
+        if current_level == 0 {
+            output.push_str("}\n");
+        }
+    }
+
 }
 
 #[cfg(test)]
 mod tests {
     use super::Handle;
+    use super::HilbertTree;
+    use super::super::hilbert_model::{HilbertModel,Quantizer,DimensionRange};
 
     #[test]
     fn handle_level() {
@@ -619,6 +697,67 @@ mod tests {
         assert!(Handle::new(4).includes(0.25));
         assert_eq!(Handle::new(5).includes(0.25), false);
         assert_eq!(Handle::new(6).includes(f64::NAN), false);
+    }
+
+    #[test]
+    fn hilbert_bisect_index() {
+        let expected_graph = r###"
+digraph BST {
+    node [fontname="Arial"];
+
+    "[0,1)" [shape=doublecircle,label="1.000\n[0,1)"]
+    "[0,1)" -> "[0/2,1/2)";
+    "[0,1)" -> "[1/2,2/2)";
+
+    "[0/2,1/2)" [label="1.000\n[0/2,1/2)"];
+    "[0/2,1/2)" -> "[0/4,1/4)";
+    "[0/2,1/2)" -> "[1/4,2/4)";
+    "[0/4,1/4)" [shape=octagon,label="1.000\n[0/4,1/4)"];
+    "[1/4,2/4)" [shape=octagon,label="1.000\n[1/4,2/4)"];
+
+    "[1/2,2/2)" [label="262145.000\n[1/2,2/2)"];
+    "[1/2,2/2)" -> "[2/4,3/4)";
+    "[1/2,2/2)" -> "[3/4,4/4)";
+    "[2/4,3/4)" [shape=octagon,label="262145.000\n[2/4,3/4)"];
+
+    "[3/4,4/4)" [label="524287.500\n[3/4,4/4)"];
+    "[3/4,4/4)" -> "[6/8,7/8)";
+    "[3/4,4/4)" -> "[7/8,8/8)";
+    "[6/8,7/8)" [shape=octagon,label="524287.500\n[6/8,7/8)"];
+
+    "[7/8,8/8)" [label="196608.000\n[7/8,8/8)"];
+    "[7/8,8/8)" -> "[14/16,15/16)";
+    "[7/8,8/8)" -> "[15/16,16/16)";
+    "[14/16,15/16)" [shape=octagon,label="196608.000\n[14/16,15/16)"];
+    "[15/16,16/16)" [shape=octagon,label="1.000\n[15/16,16/16)"];
+}
+"###;
+        let model = create_test_model();
+        let mut tree = HilbertTree::new(*model);
+
+        tree.bisect_index(0.25);
+        tree.bisect_index(0.75);
+        tree.bisect_index(0.125);
+        tree.bisect_index(0.875);
+        tree.bisect_index(0.9);
+        let mut graph = String::new();
+        tree.draw(Handle::new(0), 6, 3, &mut graph);
+        println!("Graphviz DOT:\n{}", graph);
+        assert_eq!(expected_graph, &graph);
+    }
+
+
+    fn create_test_model() -> Box<impl HilbertModel> {
+        let f = |p: &[f64]| -> f64 { 
+            let y = p[0]*p[1] + 1.0;
+            // println!("eval f(p) for [{},{}] = {}", p[0], p[1], y);
+            y
+        };
+        let ranges = vec![
+            DimensionRange::new(0.0, 1024.0, 1.0, 20),
+            DimensionRange::new(0.0, 1024.0, 1.0, 20),
+        ];
+        Box::new(Quantizer::new(ranges, 20, f))
     }
 }
 
