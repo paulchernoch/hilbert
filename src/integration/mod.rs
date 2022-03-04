@@ -1,7 +1,7 @@
 pub mod hilbert_tree;
 pub mod handle;
 pub mod hilbert_model;
-
+pub mod stopping_criteria;
 
 #[cfg(test)]
 mod tests {

@@ -700,7 +700,7 @@ mod tests {
     }
 
     #[test]
-    fn hilbert_bisect_index() {
+    fn hilbert_tree_bisect_index() {
         let expected_graph = r###"
 digraph BST {
     node [fontname="Arial"];

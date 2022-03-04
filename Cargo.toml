@@ -17,8 +17,12 @@ num = "0.4"
 spectral = "0.6.0"
 criterion = "0.3"
 rand = "0.8"
-quantogram = "0.3"
+quantogram = "0.4.3"
 
 [[bench]]
 name = "transform_benchmarks"
+harness = false
+
+[[bench]]
+name = "stopping"
 harness = false
