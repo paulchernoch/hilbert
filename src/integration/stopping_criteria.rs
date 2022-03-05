@@ -62,6 +62,15 @@ impl StoppingReason {
             _ => true
         }
     }
+    pub fn get_status(&self) -> IterationStatus {
+        match self {
+            StoppingReason::TimeLimit(s) => s.clone(),
+            StoppingReason::SampleLimit(s) => s.clone(),
+            StoppingReason::LowEstimatedError(s) => s.clone(),
+            StoppingReason::SmallDeviation(s) => s.clone(),
+            StoppingReason::Continue(s) => s.clone()
+        }
+    }
 }
 
 /// Decides when integration should stop based on multiple criteria.

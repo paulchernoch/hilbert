@@ -701,6 +701,10 @@ mod tests {
 
     #[test]
     fn hilbert_tree_bisect_index() {
+        // Curious about this text?
+        // Go to https://dreampuf.github.io/GraphvizOnline and then next
+        // paste it in and you will see 
+        // a nicely labeled binary tree.
         let expected_graph = r###"
 digraph BST {
     node [fontname="Arial"];
