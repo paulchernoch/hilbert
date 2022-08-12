@@ -17,7 +17,7 @@ use super::normalize::{ IntegerDataRange, FloatDataRange };
 ///    - `bits_allocated` - If supplied, compress the values to this number of bits, 
 ///                         otherwise use the minimum number of bits required to faithfully represent the full range of data. 
 ///    - **return** - A tuple holding a Vec of Points whose coordinate values have been normalized and optionally scaled, 
-///                   and the number of bits used to represent each dimension. (The number of bots used must be fed to the Hilbert transformation.)
+///                   and the number of bits used to represent each dimension. (The number of bits used must be fed to the Hilbert transformation.)
 pub fn make_points_i32<I>(points : &[I], starting_id : usize, range_option : Option<IntegerDataRange>, bits_allocated : Option<usize>) -> (Vec<Point>, usize)
 // The "for<'a>" below is "higher-ranked lifetime" notation. Got it from stackoverflow. Confused about what it does but it is needed!
 where
