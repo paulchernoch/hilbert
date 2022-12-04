@@ -130,7 +130,6 @@ impl Permutation {
 /// Tests of the Permutation methods.
 mod tests {
     #[allow(unused_imports)]
-    use spectral::prelude::*;
     use crate::permutation::Permutation;
 
     #[test]
@@ -140,7 +139,7 @@ mod tests {
         let permutation = Permutation::new(&moves);
         let actual_permuted_data = permutation.apply(&data);
         let expected_permuted_data = vec![4,6,2,10,8];
-        asserting("Correct permutation").that(&actual_permuted_data).is_equal_to(expected_permuted_data);
+        assert_eq!(actual_permuted_data, expected_permuted_data, "Correct permutation");
     }
 
     #[test]
@@ -160,7 +159,7 @@ mod tests {
         let swapped = permutation.swap(2, 3); // -> [2,0,4,1,3]
         let actual_permuted_data = swapped.apply(&data);
         let expected_permuted_data = vec![4,8,2,10,6];
-        asserting("swapped permutation").that(&actual_permuted_data).is_equal_to(expected_permuted_data);
+        assert_eq!(actual_permuted_data, expected_permuted_data, "swapped permutation");
     }
 
 }

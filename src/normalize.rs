@@ -237,7 +237,6 @@ impl FloatDataRange {
 mod tests {
 
     #[allow(unused_imports)]
-    use spectral::prelude::*;
     use super::{IntegerDataRange, FloatDataRange};
 
     #[test]
@@ -245,7 +244,7 @@ mod tests {
         let points = test_points_i32();
         let actual_range = IntegerDataRange::from_i32(&points);
         let expected_range = IntegerDataRange::new(-100, 100);
-        asserting("Range correct").that(&actual_range).is_equal_to(expected_range);
+        assert_eq!(&actual_range, &expected_range, "Range correct");
     }
 
     #[test]
@@ -254,7 +253,7 @@ mod tests {
         let range = IntegerDataRange::from_i32(&points);
         let actual_normalized = range.normalize(-16);
         let expected_normalized = 84;
-        asserting("Normalized value correct").that(&actual_normalized).is_equal_to(expected_normalized);
+        assert_eq!(actual_normalized, expected_normalized, "Normalized value correct");
     }    
 
     #[test]
@@ -263,7 +262,7 @@ mod tests {
         let range = IntegerDataRange::from_i32(&points);
         let actual_compressed = range.compress(-16, 7);
         let expected_compressed = 42;
-        asserting("Compressed value correct").that(&actual_compressed).is_equal_to(expected_compressed);
+        assert_eq!(actual_compressed, expected_compressed, "Compressed value correct");
     }
 
     #[test]
@@ -271,7 +270,7 @@ mod tests {
         let in_out_pairs = vec![(0_u64,0), (1,0), (2,1), (3,2), (4,2), (5,3), (6,3), (7,3), (8,3), (9,4)];
         for (n, expected) in in_out_pairs {
             let actual = super::smallest_power_of_two(n);
-            asserting(&format!("n = {}, actual = {}, expected = {}", n, actual, expected)).that(&actual).is_equal_to(expected);
+            assert_eq!(actual, expected, "n = {}, actual = {}, expected = {}", n, actual, expected);
         }
     }
 
@@ -280,7 +279,7 @@ mod tests {
         let points = test_points_f64();
         let actual_range = FloatDataRange::from_f64(&points, 10.0);
         let expected_range = FloatDataRange::new(-100.0, 100.19, 10.0);
-        asserting("Range correct").that(&actual_range).is_equal_to(expected_range);
+        assert_eq!(actual_range, expected_range, "Range correct");
     }
 
     #[test]
@@ -289,7 +288,7 @@ mod tests {
         let range = FloatDataRange::from_f64(&points, 10.0);
         let actual_normalized = range.normalize(-16.0);
         let expected_normalized = 840;
-        asserting("Normalized value correct").that(&actual_normalized).is_equal_to(expected_normalized);
+        assert_eq!(actual_normalized, expected_normalized, "Normalized value correct");
     }
 
     /// Compress a value in a range that requires 11 bits down to 7 bits, forcing a division by 16 and loss of precision. 
@@ -299,7 +298,7 @@ mod tests {
         let range = FloatDataRange::from_f64(&points, 10.0);
         let actual_compressed = range.compress(-16.0, 7);
         let expected_compressed = 52;
-        asserting("Compressed value correct").that(&actual_compressed).is_equal_to(expected_compressed);
+        assert_eq!(actual_compressed, expected_compressed, "Compressed value correct");
     }    
 
     fn test_points_i32() -> Vec<Vec<i32>> {
