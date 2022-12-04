@@ -100,7 +100,6 @@ where
 mod tests {
 
     #[allow(unused_imports)]
-    use spectral::prelude::*;
     use crate::point::Point;
 
     /// Make some points and verify that they are properly normalized and the required number of bits is properly identified.
@@ -108,7 +107,7 @@ mod tests {
     fn make_points_f64() {
         let float_points = test_points_f64();
         let (actual_points, bits_used) = super::make_points_f64(&float_points, 0, None, None, 10.0);
-        asserting("correct bits_used").that(&bits_used).is_equal_to(11);
+        assert_eq!(bits_used, 11, "correct bits_used");
         let expected_points = vec![
             Point::new(0, &vec![895, 1053, 1037]),
             Point::new(0, &vec![952, 1202, 2002]),
@@ -117,7 +116,7 @@ mod tests {
         for i in 0..3 {
             let expected_point = &expected_points[i];
             let actual_point = &actual_points[i];
-            asserting(&format!("For point {:?}", expected_point)).that(&expected_point.are_coordinates_identical(actual_point)).is_equal_to(true);
+            assert!(&expected_point.are_coordinates_identical(actual_point), "For point {:?}", expected_point);
         }
     }
 

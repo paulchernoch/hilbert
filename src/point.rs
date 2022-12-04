@@ -253,7 +253,6 @@ impl PartialEq for Point {
 /// Tests of the Point methods.
 mod tests {
     #[allow(unused_imports)]
-    use spectral::prelude::*;
     extern crate rand;
     use rand::thread_rng;
     use rand::seq::SliceRandom;
@@ -264,7 +263,7 @@ mod tests {
     fn square_distance() {
         let p1 = Point::new(0, &[3, 4, 5]);
         let p2 = Point::new(0, &[0, 8, 10]);
-        asserting!("Square distance between points").that(&p1.square_distance(&p2)).is_equal_to(50);
+        assert_eq!(p1.square_distance(&p2), 50, "Square distance between points");
     }
 
     #[test]
@@ -275,11 +274,11 @@ mod tests {
 
         // After shuffling, the points should not be in the same order.
         actual_points.shuffle(&mut rng);
-        asserting("Points not sorted by Hilbert Index").that(&actual_points).is_not_equal_to(expected_points.clone());
+        assert_ne!(actual_points, expected_points.clone(), "Points not sorted by Hilbert Index");
 
         // After sorting, the points should once again be in teh same order.
         Point::hilbert_sort(&mut actual_points, 3);
-        asserting("Points sorted by Hilbert Index").that(&actual_points).is_equal_to(expected_points);
+        assert_eq!(actual_points, expected_points, "Points sorted by Hilbert Index");
     }
 
     #[test]
@@ -287,7 +286,7 @@ mod tests {
         let p1 = Point::new(0, &[3, 4, 5]);
         let index = p1.hilbert_transform(5);
         let p2 = Point::new_from_hilbert_index(0, &index, 5, 3);
-        asserting("Point to Hilbert round trip").that(&p1).is_equal_to(p2);
+        assert_eq!(p1, p2, "Point to Hilbert round trip");
     }
 
     /// Construct all sixty-four possible 2-dimensional Points, each with coordinates requiring no more than 3 bits to represent

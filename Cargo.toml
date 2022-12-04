@@ -14,10 +14,11 @@ repository = "https://github.com/paulchernoch/hilbert"
 
 [dependencies]
 num = "0.4"
-spectral = "0.6.0"
-criterion = "0.3"
 rand = "0.8"
 quantogram = "0.4.3"
+
+[dev-dependencies]
+criterion = "0.3"
 
 [[bench]]
 name = "transform_benchmarks"

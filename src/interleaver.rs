@@ -82,7 +82,6 @@ impl Interleaver {
 #[cfg(test)]
 mod tests {
     #[allow(unused_imports)]
-    use spectral::prelude::*;
     use crate::transform::fast_hilbert;
     use crate::interleaver::Interleaver;
 
@@ -97,7 +96,7 @@ mod tests {
         let interleaver = Interleaver::new(dimensions, bit_depth);
         let actual = fast_hilbert::interleave_be(&axes, 5, Some(&interleaver));
         let expected : Vec<u8> = vec![100,76];
-        asserting("Correct interleave result using Interleaver").that(&actual).is_equal_to(expected);
+        assert_eq!(&actual, &expected, "Correct interleave result using Interleaver");
     }
 
 }
