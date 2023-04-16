@@ -96,7 +96,7 @@ Here are examples using the crate:
   4. Sort the points by the Hilbert Curve, using 11 bits per dimension.
   5. Round trip, showing how to convert a point to the Hilbert index and back again.
 
-```
+```rs
         // 1. Create two 3-D points and get the square of the distance between them.
         let p1 = Point::new(0, &[3, 4, 5]);
         let p2 = Point::new(1, &[0, 8, 10]);
